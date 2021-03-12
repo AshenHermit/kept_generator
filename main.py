@@ -34,7 +34,7 @@ def merge_random_parts(parts, length):
 
 
 def main():
-    full_audio = AudioSegment.from_mp3("C:/Users/user/Python/kept_generator/kept.mp3")
+    full_audio = AudioSegment.from_mp3("kept.mp3")
     full_audio = full_audio[264:]
 
     bpm = 125

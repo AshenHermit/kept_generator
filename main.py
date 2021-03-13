@@ -35,9 +35,9 @@ def merge_random_parts(parts, length):
 
 def main():
     full_audio = AudioSegment.from_mp3("kept.mp3")
-    full_audio = full_audio[264:]
+    full_audio = full_audio[25:]
 
-    bpm = 125
+    bpm = 125.11
     quarter_ms_per_tic = (60 / bpm * 1000)
 
     cut = 4*4
@@ -48,7 +48,8 @@ def main():
 def generate(full_audio, bpm, quarter_ms_per_tic, cut):
     out_audio = AudioSegment.empty()
 
-    for i in range(8):
+    print("generating...")
+    for i in tqdm(range(4*8)):
         parts = get_parts_from_audio(full_audio, quarter_ms_per_tic, cut, cut*i)
         out_audio += merge_random_parts(parts, cut)
 
@@ -56,7 +57,9 @@ def generate(full_audio, bpm, quarter_ms_per_tic, cut):
 
 def generate_and_play(full_audio, bpm, quarter_ms_per_tic, cut):
     out_audio = generate(full_audio, bpm, quarter_ms_per_tic, cut)
+    print("exporting...")
     out_audio.export("generated_kept.mp3")
+    print("done")
     play(out_audio)
 
 

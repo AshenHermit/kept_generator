@@ -6,7 +6,7 @@ song_profiles_dict = {
         "filepath": "songs/crimewave.mp3",
         "bpm": 120.575,
         "offset_ms": 0,
-        "max_steps": 2*8,
+        "max_steps": 4*8,
     },
     "kept":{
         "filepath": "songs/kept.mp3",

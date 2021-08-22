@@ -9,7 +9,7 @@ import threading
 from pathlib import Path
 
 class AudioShuffler():
-    def __init__(self, full_audio, bpm):
+    def __init__(self, full_audio, bpm, max_steps=4*8):
         self.full_audio = full_audio
 
         self.bpm = bpm
@@ -17,7 +17,7 @@ class AudioShuffler():
 
         self.cut = 4*4
 
-        self.max_steps = 4*8
+        self.max_steps = max_steps
         self.next_step_index = 0
 
     def get_parts_from_audio(self, audio, ms_per_tic, parts_count, offset=0):

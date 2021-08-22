@@ -30,7 +30,7 @@ def stream_part(filepath):
 
 def generation_thread(shuffler, filename):
     audio = shuffler.generate_next()
-    audio = audio[:-40] #TODO: temporary solution. when streaming, there is a pause arises between chunks, and I can't get rid of it.
+    audio = audio[:-30] #TODO: temporary solution. when streaming, there is a pause arises between chunks, and I can't get rid of it.
     audio.export(filename)
 
 def streaming_thread(filename):

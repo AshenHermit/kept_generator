@@ -1,77 +1,81 @@
-from os import name
+from os import name, times
 from pydub import AudioSegment
 from pydub.playback import play
 import random
 import os
 from tqdm import tqdm
+import subprocess
+import time
+import threading
+from pathlib import Path
 
-def get_parts_from_audio(audio, ms_per_tic, parts_count, offset=0):
-    parts = []
-    for part_id in range(offset, offset+parts_count):
-        parts.append(
-            audio[ms_per_tic*(part_id):ms_per_tic*(part_id+1)])
+from audio_shuffler import AudioShuffler
 
-    return parts
 
-def merge_random_parts(parts, length):
-    out_audio = AudioSegment.empty()
-    last_r = [0]*2
 
-    def rand(i):
-        return random.randint(0, len(parts)//2-1)*2 + i%2
+def execute(cmd):
+    popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
+    for stdout_line in iter(popen.stdout.readline, ""):
+        yield stdout_line 
+    popen.stdout.close()
+    return_code = popen.wait()
+    if return_code:
+        raise subprocess.CalledProcessError(return_code, cmd)
 
-    for i in range(length):
-        r = rand(i)
-        while last_r[0] == r or last_r[1] == r:
-            r = rand(i)
+def stream_part(filepath):
+    # for single image
+    # os.system(f"ffmpeg -loop 1 -i video_image.jpg -i {filepath} -c:v libx264 -tune stillimage -c:a aac -b:a 192k -pix_fmt yuv420p -shortest -f mpegts - | ffmpeg -i pipe: -f flv rtmp://a.rtmp.youtube.com/live2/pjsk-eyxx-83js-27v1-f1r1")
+    # for video
+    os.system(f"ffmpeg -i loop_video.mp4 -i {filepath} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest -f mpegts - | ffmpeg -i pipe: -f flv rtmp://a.rtmp.youtube.com/live2/pjsk-eyxx-83js-27v1-f1r1")
 
-        last_r[1] = last_r[0]
-        last_r[0] = r
+def generation_thread(shuffler, filename):
+    audio = shuffler.generate_next()
+    audio = audio[:-40] #TODO: temporary solution. when streaming, there is a pause arises between chunks, and I can't get rid of it.
+    audio.export(filename)
 
-        out_audio += parts[r]
+def streaming_thread(filename):
+    stream_part(filename)
 
-    return out_audio
-
+def make_dirs(path):
+    Path(path).mkdir(exist_ok=True)
 
 def main():
     full_audio = AudioSegment.from_mp3("kept.mp3")
     full_audio = full_audio[25:]
+    shuffler = AudioShuffler(full_audio, 125.11)
 
-    bpm = 125.11
-    quarter_ms_per_tic = (60 / bpm * 1000)
+    audio_format = "wav"
 
-    cut = 4*4
+    chunks_folder_path = "chunks"
+    chunk_name = "chunk"
+    make_dirs(chunks_folder_path)
+    chunks = 1
 
-    generate_and_play(full_audio, bpm, quarter_ms_per_tic, cut)
-    # save_samples(full_audio, bpm, quarter_ms_per_tic, cut)
+    started = False
 
-def generate(full_audio, bpm, quarter_ms_per_tic, cut):
-    out_audio = AudioSegment.empty()
+    def get_wait_time():
+        if started: return (shuffler.quarter_ms_per_tic * shuffler.cut)/1000
+        else: return 1.0
 
-    print("generating...")
-    for i in tqdm(range(4*8)):
-        parts = get_parts_from_audio(full_audio, quarter_ms_per_tic, cut, cut*i)
-        out_audio += merge_random_parts(parts, cut)
+    wait_time = get_wait_time()
 
-    return out_audio
+    while True:
+        threading.Thread(target=generation_thread, args=(shuffler, f"{chunks_folder_path}/{chunk_name}_{chunks}.{audio_format}")).start()
+        
+        time.sleep(wait_time)
+        started = True
+        wait_time = get_wait_time()
+        
+        threading.Thread(target=streaming_thread, args=(f"{chunks_folder_path}/{chunk_name}_{chunks}.{audio_format}",)).start()
+        chunks += 1
+        threading.Thread(target=generation_thread, args=(shuffler, f"{chunks_folder_path}/{chunk_name}_{chunks}.{audio_format}")).start()
+        
+        time.sleep(wait_time)
+        threading.Thread(target=streaming_thread, args=(f"{chunks_folder_path}/{chunk_name}_{chunks}.{audio_format}",)).start()
+        chunks -= 1
 
-def generate_and_play(full_audio, bpm, quarter_ms_per_tic, cut):
-    out_audio = generate(full_audio, bpm, quarter_ms_per_tic, cut)
-    print("exporting...")
-    out_audio.export("generated_kept.mp3")
-    print("done")
-    play(out_audio)
+        if chunks >= 20: break
 
-
-def save_samples(full_audio, bpm, quarter_ms_per_tic, cut):
-    folder_name = "samples"
-    os.makedirs(folder_name, exist_ok=True)
-    samples = get_parts_from_audio(full_audio, quarter_ms_per_tic, cut*8, 0)
-
-    for i in tqdm(range(len(samples))):
-        samples[i].export(f"{folder_name}/kept_part_{i}.wav")
-
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
+    pass

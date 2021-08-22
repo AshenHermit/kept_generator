@@ -1,4 +1,3 @@
-from os import name, times
 from pydub import AudioSegment
 from pydub.playback import play
 import random

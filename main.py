@@ -1,4 +1,3 @@
-from os import name, times
 from pydub import AudioSegment
 from pydub.playback import play
 import random
@@ -58,6 +57,8 @@ def main():
         else: return 1.0
 
     wait_time = get_wait_time()
+
+    #TODO: 
 
     while True:
         threading.Thread(target=generation_thread, args=(shuffler, f"{chunks_folder_path}/{chunk_name}_{chunks}.{audio_format}")).start()

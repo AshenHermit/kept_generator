@@ -22,10 +22,11 @@ def execute(cmd):
         raise subprocess.CalledProcessError(return_code, cmd)
 
 def stream_part(filepath):
+    streaming_url = os.environ.get('STREAMING_URL')
     # for single image
-    # os.system(f"ffmpeg -loop 1 -i video_image.jpg -i {filepath} -c:v libx264 -tune stillimage -c:a aac -b:a 192k -pix_fmt yuv420p -shortest -f mpegts - | ffmpeg -i pipe: -f flv rtmp://a.rtmp.youtube.com/live2/pjsk-eyxx-83js-27v1-f1r1")
+    # os.system(f"ffmpeg -loop 1 -i video_image.jpg -i {filepath} -c:v libx264 -tune stillimage -c:a aac -b:a 192k -pix_fmt yuv420p -shortest -f mpegts - | ffmpeg -i pipe: -f flv {streaming_url}")
     # for video
-    os.system(f"ffmpeg -i loop_video.mp4 -i {filepath} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest -f mpegts - | ffmpeg -i pipe: -f flv rtmp://a.rtmp.youtube.com/live2/pjsk-eyxx-83js-27v1-f1r1")
+    os.system(f"ffmpeg -i loop_video.mp4 -i {filepath} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest -f mpegts - | ffmpeg -i pipe: -f flv {streaming_url}")
 
 def generation_thread(shuffler, filename):
     audio = shuffler.generate_next()

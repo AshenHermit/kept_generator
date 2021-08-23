@@ -39,7 +39,7 @@ class SongBank():
     def load_from_dict(self, song_profiles_dict):
         for song_id in song_profiles_dict:
             song_dict = song_profiles_dict[song_id]
-            
+
             if not song_dict.get("disabled", False):
                 self.song_profiles[song_id] = SongProfile(song_id).fit_dictionary(song_dict)
 
@@ -196,7 +196,7 @@ class ShufflingBroadcaster():
     def generation_thread(shuffler:AudioShuffler, filename):
         audio = shuffler.generate_next()
         #TODO: temporary solution. when streaming, there is a pause arises between chunks, and I can't get rid of it.
-        audio = audio[:-20]
+        audio = audio[:-5]
         audio.export(filename)
 
     @staticmethod

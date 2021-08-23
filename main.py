@@ -12,8 +12,8 @@ song_profiles_dict = {
     "kept":{
         "name": "Kept",
         "filepath": "songs/kept.mp3",
-        "bpm": 125.11,
-        "offset_ms": 20,
+        "bpm": 125.138,
+        "offset_ms": 0,
         "max_steps": 4*8,
     },
     "year_of_silence":{

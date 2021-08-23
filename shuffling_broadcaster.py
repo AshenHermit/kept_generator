@@ -182,21 +182,21 @@ class ShufflingBroadcaster():
     @property
     def wait_time(self):
         if self.started: return (self.shuffler.quarter_ms_per_tic * self.shuffler.cut)/1000
-        else: return 1.0
+        else: return 0.5
 
     @staticmethod
     def stream_part(filepath, streaming_url, info_image_filepath):
         single_image = False
         if single_image:
-            os.system(f"ffmpeg -loop 1 -i video_image.jpg -i {filepath} -c:v libx264 -tune stillimage -c:a aac -b:a 192k -pix_fmt yuv420p -shortest -f mpegts - | ffmpeg -i pipe: -f flv {streaming_url}")
+            os.system(f"ffmpeg -loop 1 -i video_image.jpg -i {filepath} -c:v libx264 -tune stillimage -c:a aac -b:a 192k -pix_fmt yuv420p -shortest -f flv - | ffmpeg -i pipe: -f flv {streaming_url}")
         else:
-            os.system(f'ffmpeg -i loop_video.mp4 -i {info_image_filepath} -filter_complex "[0:v][1:v]blend=all_mode=lighten[v]" -map "[v]" -map 0:a -f flv - | ffmpeg -stream_loop -1 -i pipe: -i {filepath} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest -f flv {streaming_url}')
+            os.system(f'ffmpeg -i loop_video.mp4 -i {info_image_filepath} -filter_complex "[0:v][1:v]blend=all_mode=lighten[v]" -map "[v]" -map 0:a -threads 4 -vcodec libx264 -f flv - | ffmpeg -stream_loop -1 -i pipe: -i {filepath} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest -f flv {streaming_url}')
 
     @staticmethod
     def generation_thread(shuffler:AudioShuffler, filename):
         audio = shuffler.generate_next()
         #TODO: temporary solution. when streaming, there is a pause arises between chunks, and I can't get rid of it.
-        audio = audio[:-5]
+        # audio = audio[:-5]
         audio.export(filename)
 
     @staticmethod

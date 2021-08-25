@@ -37,16 +37,40 @@ song_profiles_dict = {
         "bpm": 127.936,
         "offset_ms": 0,
         "max_steps": 4*5,
+    },
+    "love_and_caring":{
+        "name": "Love and Caring",
+        "filepath": "songs/love_and_caring.mp3",
+        "bpm": 131.991,
+        "offset_ms": 0,
+        "max_steps": 4*3,
+    },
+    "reckless":{
+        "name": "Reckless",
+        "filepath": "songs/reckless.mp3",
+        "bpm": 119.981,
+        "offset_ms": 0,
+        "max_steps": 4*6+2,
+    },
+    "1991":{
+        "name": "1991",
+        "filepath": "songs/1991.mp3",
+        "bpm": 120.532,
+        "offset_ms": 0,
+        "max_steps": 4*2+2,
     }
 }
 
 def main():
+    song_names = list(map(lambda song: f'"{song["name"]}"', filter(lambda x: not x.get("disabled", False), song_profiles_dict.values())))
+    print(', '.join(song_names))
+
     broadcaster = ShufflingBroadcaster(
         os.environ.get("STREAMING_URL"), 
         SongBank.create_from_dict(song_profiles_dict))
     
     broadcaster.play_random_song()
-    # broadcaster.play_song_by_id("untrust_us")
+    # broadcaster.play_song_by_id("1991")
     broadcaster.run()
     
     

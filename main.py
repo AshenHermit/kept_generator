@@ -73,6 +73,13 @@ song_profiles_dict = {
         "bpm": 121.978,
         "offset_ms": 0,
         "max_steps": 39,
+    },
+    "intimate":{
+        "name": "Intimate",
+        "filepath": "songs/intimate.mp3",
+        "bpm": 125.979,
+        "offset_ms": 0,
+        "max_steps": 39,
     }
 }
 
@@ -85,7 +92,7 @@ def main():
         SongBank.create_from_dict(song_profiles_dict))
     
     broadcaster.play_random_song()
-    # broadcaster.play_song_by_id("vietnam")
+    # broadcaster.play_song_by_id("intimate")
     broadcaster.run()
     
     

@@ -9,22 +9,22 @@ import threading
 from pathlib import Path
 
 class AudioShuffler():
-    def __init__(self, full_audio, bpm, max_steps=4*8):
+    def __init__(self, full_audio, bpm, max_steps=4*8, beats_in_step=4*4):
         self.full_audio = full_audio
 
         self.bpm = bpm
-        self.quarter_ms_per_tic = (60 / bpm * 1000)
+        self.quarter_ms_per_beat = (60 / bpm * 1000)
 
-        self.cut = 4*4
+        self.beats_in_step = beats_in_step
 
         self.max_steps = max_steps
         self.next_step_index = 0
 
     def get_parts_from_audio(self, audio, ms_per_tic, parts_count, offset=0):
         parts = []
-        for part_id in range(offset, offset+parts_count):
+        for part_index in range(offset, offset+parts_count):
             parts.append(
-                audio[ms_per_tic*(part_id):ms_per_tic*(part_id+1)])
+                audio[ms_per_tic*part_index:ms_per_tic*(part_index+1)])
 
         return parts
 
@@ -51,8 +51,8 @@ class AudioShuffler():
         out_audio = AudioSegment.empty()
 
         for i in tqdm(range(4*8)):
-            parts = self.get_parts_from_audio(self.full_audio, self.quarter_ms_per_tic, self.cut, self.cut*i)
-            out_audio += self.merge_random_parts(parts, self.cut)
+            parts = self.get_parts_from_audio(self.full_audio, self.quarter_ms_per_beat, self.beats_in_step, self.beats_in_step*i)
+            out_audio += self.merge_random_parts(parts, self.beats_in_step)
 
         return out_audio
 
@@ -64,10 +64,10 @@ class AudioShuffler():
         play(out_audio)
 
     def generate_next(self):        
-        offset = self.cut * (self.next_step_index%self.max_steps)
-        parts = self.get_parts_from_audio(self.full_audio, self.quarter_ms_per_tic, self.cut, offset)
+        offset = self.beats_in_step * (self.next_step_index%self.max_steps)
+        parts = self.get_parts_from_audio(self.full_audio, self.quarter_ms_per_beat, self.beats_in_step, offset)
         self.next_step_index += 1
-        return self.merge_random_parts(parts, self.cut)
+        return self.merge_random_parts(parts, self.beats_in_step)
 
     def test_save_samples(self, full_audio, bpm, quarter_ms_per_tic, cut):
         folder_name = "samples"

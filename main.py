@@ -58,6 +58,21 @@ song_profiles_dict = {
         "bpm": 120.532,
         "offset_ms": 0,
         "max_steps": 4*2+2,
+    },
+    "empathy":{
+        "name": "Empathy",
+        "filepath": "songs/empathy.mp3",
+        "bpm": 109.980/2.0,
+        "beats_in_step": 4*2,
+        "offset_ms": 0,
+        "max_steps": 28,
+    },
+    "vietnam":{
+        "name": "Vietnam",
+        "filepath": "songs/vietnam.mp3",
+        "bpm": 121.978,
+        "offset_ms": 0,
+        "max_steps": 39,
     }
 }
 
@@ -70,7 +85,7 @@ def main():
         SongBank.create_from_dict(song_profiles_dict))
     
     broadcaster.play_random_song()
-    # broadcaster.play_song_by_id("1991")
+    # broadcaster.play_song_by_id("vietnam")
     broadcaster.run()
     
     

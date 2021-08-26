@@ -10,13 +10,14 @@ import random
 from audio_shuffler import AudioShuffler
 
 class SongProfile():
-    def __init__(self, id="song", name="song", filepath="song.mp3", bpm=120, offset_ms=0, max_steps=4*8) -> None:
+    def __init__(self, id="song", name="song", filepath="song.mp3", bpm=120, offset_ms=0, max_steps=4*8, beats_in_step=4*4) -> None:
         self.id = id
         self.name = name
         self.filepath = filepath
         self.bpm = bpm
         self.offset_ms = offset_ms
         self.max_steps = max_steps
+        self.beats_in_step = beats_in_step
 
     def fit_dictionary(self, dict:dict):
         self.name = dict.get("name", self.name)
@@ -24,6 +25,7 @@ class SongProfile():
         self.bpm = dict.get("bpm", self.bpm)
         self.offset_ms = dict.get("offset_ms", self.offset_ms)
         self.max_steps = dict.get("max_steps", self.max_steps)
+        self.beats_in_step = dict.get("beats_in_step", self.beats_in_step)
         return self
 
 class SongBank():
@@ -42,6 +44,10 @@ class SongBank():
 
             if not song_dict.get("disabled", False):
                 self.song_profiles[song_id] = SongProfile(song_id).fit_dictionary(song_dict)
+
+    def get_songs_count(self):
+        return len(self.song_profiles.keys())
+
 
     @staticmethod
     def create_from_dict(song_profiles_dict):
@@ -97,7 +103,7 @@ class ShufflingBroadcaster():
     def remember_song(self, song_id):
         if self.current_song is None: return
         self.previous_songs_ids += [song_id]
-        self.previous_songs_ids = self.previous_songs_ids[-2:]
+        self.previous_songs_ids = self.previous_songs_ids[-(self.song_bank.get_songs_count()//2):]
 
     def play_song_by_id(self, song_id):
         if not self.song_bank.has_song_with_id(song_id): return False
@@ -109,7 +115,9 @@ class ShufflingBroadcaster():
 
         full_audio = AudioSegment.from_mp3(self.current_song.filepath)
         full_audio = full_audio[self.current_song.offset_ms:]
-        self.shuffler = AudioShuffler(full_audio, self.current_song.bpm, self.current_song.max_steps)
+        self.shuffler = AudioShuffler(full_audio, self.current_song.bpm, 
+                                        self.current_song.max_steps, 
+                                        self.current_song.beats_in_step)
         self.remaining_chunks_count = self.current_song.max_steps
 
         self.update_info_image()
@@ -181,7 +189,7 @@ class ShufflingBroadcaster():
 
     @property
     def wait_time(self):
-        if self.started: return (self.shuffler.quarter_ms_per_tic * self.shuffler.cut)/1000
+        if self.started: return (self.shuffler.quarter_ms_per_beat * self.shuffler.beats_in_step)/1000
         else: return 0.5
 
     @staticmethod

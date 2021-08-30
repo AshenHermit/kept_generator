@@ -80,6 +80,29 @@ song_profiles_dict = {
         "bpm": 125.979,
         "offset_ms": 0,
         "max_steps": 39,
+    },
+    "baptism":{
+        "name": "Baptism",
+        "filepath": "songs/baptism.mp3",
+        "bpm": 119.980,
+        "offset_ms": 0,
+        "max_steps": 31,
+    },
+    "kerosene":{
+        "name": "Kerosene",
+        "filepath": "songs/kerosene.mp3",
+        "bpm": 124.989/2.0,
+        "beats_in_step": 4*2,
+        "offset_ms": 0,
+        "max_steps": 24,
+    },
+    "pale_flesh":{
+        "name": "Pale Flesh",
+        "filepath": "songs/pale_flesh.mp3",
+        "bpm": 140.0/2.0,
+        "beats_in_step": 4,
+        "offset_ms": 0,
+        "max_steps": 26*2,
     }
 }
 
@@ -92,7 +115,7 @@ def main():
         SongBank.create_from_dict(song_profiles_dict))
     
     broadcaster.play_random_song()
-    # broadcaster.play_song_by_id("intimate")
+    # broadcaster.play_song_by_id("pale_flesh")
     broadcaster.run()
     
     

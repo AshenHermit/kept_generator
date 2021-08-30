@@ -93,7 +93,7 @@ song_profiles_dict = {
         "filepath": "songs/kerosene.mp3",
         "bpm": 124.989/2.0,
         "beats_in_step": 4*2,
-        "offset_ms": 0,
+        "offset_ms": -10,
         "max_steps": 24,
     },
     "pale_flesh":{
@@ -101,7 +101,7 @@ song_profiles_dict = {
         "filepath": "songs/pale_flesh.mp3",
         "bpm": 140.0/2.0,
         "beats_in_step": 4,
-        "offset_ms": 0,
+        "offset_ms": 40,
         "max_steps": 26*2,
     }
 }
@@ -114,8 +114,8 @@ def main():
         os.environ.get("STREAMING_URL"), 
         SongBank.create_from_dict(song_profiles_dict))
     
-    broadcaster.play_random_song()
-    # broadcaster.play_song_by_id("pale_flesh")
+    # broadcaster.play_random_song()
+    broadcaster.play_song_by_id("kerosene")
     broadcaster.run()
     
     

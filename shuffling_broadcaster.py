@@ -114,7 +114,11 @@ class ShufflingBroadcaster():
         self.next_song_id = self.song_bank.get_random_song_id(self.previous_songs_ids)
 
         full_audio = AudioSegment.from_mp3(self.current_song.filepath)
-        full_audio = full_audio[self.current_song.offset_ms:]
+        if(self.current_song.offset_ms>=0):
+            full_audio = full_audio[self.current_song.offset_ms:]
+        else:
+            full_audio = AudioSegment.silent(-self.current_song.offset_ms) + full_audio
+
         self.shuffler = AudioShuffler(full_audio, self.current_song.bpm, 
                                         self.current_song.max_steps, 
                                         self.current_song.beats_in_step)

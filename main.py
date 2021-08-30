@@ -114,8 +114,8 @@ def main():
         os.environ.get("STREAMING_URL"), 
         SongBank.create_from_dict(song_profiles_dict))
     
-    # broadcaster.play_random_song()
-    broadcaster.play_song_by_id("kerosene")
+    broadcaster.play_random_song()
+    # broadcaster.play_song_by_id("kerosene")
     broadcaster.run()
     
     

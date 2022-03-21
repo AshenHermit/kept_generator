@@ -10,9 +10,10 @@ import random
 from audio_shuffler import AudioShuffler
 
 class SongProfile():
-    def __init__(self, id="song", name="song", filepath="song.mp3", bpm=120, offset_ms=0, max_steps=4*8, beats_in_step=4*4) -> None:
+    def __init__(self, id="song", name="song", artist="artist", filepath="song.mp3", bpm=120, offset_ms=0, max_steps=4*8, beats_in_step=4*4) -> None:
         self.id = id
         self.name = name
+        self.artist = artist
         self.filepath = filepath
         self.bpm = bpm
         self.offset_ms = offset_ms
@@ -94,6 +95,8 @@ class ShufflingBroadcaster():
         self.info_image_filepath = "info_overlay.png"
         self.info_font_filepath = "info_font.ttf"
         self.info_font = ImageFont.truetype(self.info_font_filepath, 20)
+
+        self.broadcast_options = None
 
     @property
     def current_song(self):
@@ -189,7 +192,7 @@ class ShufflingBroadcaster():
 
         filepath = self.chunks_profile.get_chunk_filepath(chunk_index)
         threading.Thread(target=self.streaming_thread, 
-            args=(filepath, self.streaming_url, self.info_image_filepath)).start()
+            args=(filepath, self.streaming_url, self.info_image_filepath, self.broadcast_options)).start()
 
     @property
     def wait_time(self):
@@ -197,12 +200,21 @@ class ShufflingBroadcaster():
         else: return 0.5
 
     @staticmethod
-    def stream_part(filepath, streaming_url, info_image_filepath):
-        single_image = False
-        if single_image:
-            os.system(f"ffmpeg -loop 1 -i video_image.jpg -i {filepath} -c:v libx264 -tune stillimage -c:a aac -b:a 192k -pix_fmt yuv420p -shortest -f flv - | ffmpeg -i pipe: -f flv {streaming_url}")
-        else:
-            os.system(f'ffmpeg -i loop_video.mp4 -i {info_image_filepath} -filter_complex "[0:v][1:v]blend=all_mode=lighten[v]" -map "[v]" -map 0:a -threads 4 -vcodec libx264 -f flv - | ffmpeg -stream_loop -1 -i pipe: -i {filepath} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest -f flv {streaming_url}')
+    def broadcast_part(filepath, streaming_url, info_image_filepath, broadcast_options=None):
+        broadcast_options = broadcast_options or ""
+
+        # for single image
+        # os.system(f"ffmpeg -loop 1 -i video_image.jpg -i {filepath} -c:v libx264 -tune stillimage -c:a aac -b:a 192k -pix_fmt yuv420p -shortest -f flv - | ffmpeg -i pipe: -f flv {streaming_url}")
+
+        # for looped video
+        processings = [
+            f'ffmpeg -i loop_video.mp4 -i {info_image_filepath} -filter_complex "[0:v][1:v]blend=all_mode=lighten[v]" -map "[v]" -map 0:a -threads 4 -vcodec libx264 -f flv -',
+            f'ffmpeg {broadcast_options} -stream_loop -1 -i pipe: -i {filepath} -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest -f flv {streaming_url}'
+        ]
+        cmd = " | ".join(processings)
+        print(streaming_url)
+        print(cmd)
+        os.system(cmd)
 
     @staticmethod
     def generation_thread(shuffler:AudioShuffler, filename):
@@ -212,5 +224,5 @@ class ShufflingBroadcaster():
         audio.export(filename)
 
     @staticmethod
-    def streaming_thread(filename, streaming_url, info_image_filepath):
-        ShufflingBroadcaster.stream_part(filename, streaming_url, info_image_filepath)
+    def streaming_thread(filename, streaming_url, info_image_filepath, broadcast_options=None):
+        ShufflingBroadcaster.broadcast_part(filename, streaming_url, info_image_filepath, broadcast_options) 

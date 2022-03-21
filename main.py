@@ -4,6 +4,7 @@ from shuffling_broadcaster import ShufflingBroadcaster, SongBank
 song_profiles_dict = {
     "crimewave":{
         "name": "Crimewave",
+        "artist": "Crystal Castles",
         "filepath": "songs/crimewave.mp3",
         "bpm": 120.575,
         "offset_ms": 0,
@@ -11,6 +12,7 @@ song_profiles_dict = {
     },
     "kept":{
         "name": "Kept",
+        "artist": "Crystal Castles",
         "filepath": "songs/kept.mp3",
         "bpm": 125.138,
         "offset_ms": 0,
@@ -18,6 +20,7 @@ song_profiles_dict = {
     },
     "year_of_silence":{
         "name": "Year of Silence",
+        "artist": "Crystal Castles",
         "filepath": "songs/year_of_silence.mp3",
         "bpm": 115.266,
         "offset_ms": 0,
@@ -25,6 +28,7 @@ song_profiles_dict = {
     },
     "untrust_us":{
         "name": "Untrust Us",
+        "artist": "Crystal Castles",
         "filepath": "songs/untrust_us.mp3",
         "bpm": 126.534,
         "offset_ms": 0,
@@ -33,6 +37,7 @@ song_profiles_dict = {
     "tuesday":{
         "disabled": True,
         "name": "Tuesday",
+        "artist": "Crystal Castles",
         "filepath": "songs/tuesday.mp3",
         "bpm": 127.936,
         "offset_ms": 0,
@@ -40,6 +45,7 @@ song_profiles_dict = {
     },
     "love_and_caring":{
         "name": "Love and Caring",
+        "artist": "Crystal Castles",
         "filepath": "songs/love_and_caring.mp3",
         "bpm": 131.991,
         "offset_ms": 0,
@@ -47,6 +53,7 @@ song_profiles_dict = {
     },
     "reckless":{
         "name": "Reckless",
+        "artist": "Crystal Castles",
         "filepath": "songs/reckless.mp3",
         "bpm": 119.981,
         "offset_ms": 0,
@@ -54,6 +61,7 @@ song_profiles_dict = {
     },
     "1991":{
         "name": "1991",
+        "artist": "Crystal Castles",
         "filepath": "songs/1991.mp3",
         "bpm": 120.532,
         "offset_ms": 0,
@@ -61,6 +69,7 @@ song_profiles_dict = {
     },
     "empathy":{
         "name": "Empathy",
+        "artist": "Crystal Castles",
         "filepath": "songs/empathy.mp3",
         "bpm": 109.980/2.0,
         "beats_in_step": 4*2,
@@ -69,6 +78,7 @@ song_profiles_dict = {
     },
     "vietnam":{
         "name": "Vietnam",
+        "artist": "Crystal Castles",
         "filepath": "songs/vietnam.mp3",
         "bpm": 121.978,
         "offset_ms": 0,
@@ -76,6 +86,7 @@ song_profiles_dict = {
     },
     "intimate":{
         "name": "Intimate",
+        "artist": "Crystal Castles",
         "filepath": "songs/intimate.mp3",
         "bpm": 125.979,
         "offset_ms": 0,
@@ -83,6 +94,7 @@ song_profiles_dict = {
     },
     "baptism":{
         "name": "Baptism",
+        "artist": "Crystal Castles",
         "filepath": "songs/baptism.mp3",
         "bpm": 119.980,
         "offset_ms": 0,
@@ -90,6 +102,7 @@ song_profiles_dict = {
     },
     "kerosene":{
         "name": "Kerosene",
+        "artist": "Crystal Castles",
         "filepath": "songs/kerosene.mp3",
         "bpm": 124.989/2.0,
         "beats_in_step": 4*2,
@@ -98,6 +111,7 @@ song_profiles_dict = {
     },
     "pale_flesh":{
         "name": "Pale Flesh",
+        "artist": "Crystal Castles",
         "filepath": "songs/pale_flesh.mp3",
         "bpm": 140.0/2.0,
         "beats_in_step": 4,
@@ -111,9 +125,10 @@ def main():
     print(', '.join(song_names))
 
     broadcaster = ShufflingBroadcaster(
-        os.environ.get("STREAMING_URL"), 
+        os.environ.get("STREAMING_URL").strip(), 
         SongBank.create_from_dict(song_profiles_dict))
-    
+    broadcaster.broadcast_options = os.environ.get("BROADCAST_OPTIONS", "").strip()
+
     broadcaster.play_random_song()
     # broadcaster.play_song_by_id("kerosene")
     broadcaster.run()

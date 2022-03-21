@@ -1,3 +1,3 @@
-set STREAMING_URL="rtmp://a.rtmp.youtube.com/live2/vuqu-3ch3-h3ub-mc5g-7s69"
+set STREAMING_URL=rtmp://awasome-streaming-server.com/adwadawd-key-or-something-awdoiawndownadpo
 python main.py
 pause

@@ -20,6 +20,9 @@ The broadcast is implemented extremely shitty, because i dont know how to actual
     python main.py
     ```
 
+## Record
+[![RECORD](https://drive.google.com/thumbnail?id=1GMzFnv8WbaUQHOEXQnkYUjDGsDZyRr3C)](https://drive.google.com/file/d/1GMzFnv8WbaUQHOEXQnkYUjDGsDZyRr3C/preview)
+
 ## Youtube radio
 (banned, unfortunately)  
 [![Youtube radio](https://img.youtube.com/vi/lS9pbiYg770/0.jpg)](https://www.youtube.com/watch?v=lS9pbiYg770)
